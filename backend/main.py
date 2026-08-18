@@ -4,10 +4,12 @@ from database.models import User
 from security import get_current_user
 from database.dependencies import get_db
 from routers.auth import router as auth_router
+from routers.tickets import router as tickets_router
 
 app = FastAPI(title="AI Support Ticket System")
 
 app.include_router(auth_router)
+app.include_router(tickets_router)
 
 
 @app.get("/")
