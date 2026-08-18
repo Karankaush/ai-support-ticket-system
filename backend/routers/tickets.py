@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select
 from database.dependencies import get_db
 from database.models import Ticket, User
-from schemas import TicketCreate, TicketResponse, TicketAssign
+from schemas import TicketCreate, TicketResponse
 from security import get_current_user
 from fastapi import HTTPException
 
@@ -90,7 +90,6 @@ def assign_ticket(
 @router.patch("/{ticket_id}/status", response_model=TicketResponse)
 def update_ticket_status(
     ticket_id: int,
-    data: TicketStatusUpdate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
