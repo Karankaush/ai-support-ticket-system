@@ -1,6 +1,7 @@
 from fastapi import Depends, FastAPI
 from sqlalchemy.orm import Session
-
+from database.models import User
+from security import get_current_user
 from database.dependencies import get_db
 from routers.auth import router as auth_router
 
@@ -17,3 +18,13 @@ def root():
 @app.get("/health")
 def health_check(db: Session = Depends(get_db)):
     return {"status": "ok"}
+
+
+@app.get("/me")
+def get_me(current_user: User = Depends(get_current_user)):
+    return {
+        "id": current_user.id,
+        "name": current_user.name,
+        "email": current_user.email,
+        "role": current_user.role,
+    }
