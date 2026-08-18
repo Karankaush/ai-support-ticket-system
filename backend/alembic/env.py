@@ -14,7 +14,7 @@ if not DATABASE_URL:
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from database.base import Base
-from database.models import User
+from database.models import User, Ticket
 
 from alembic import context
 
