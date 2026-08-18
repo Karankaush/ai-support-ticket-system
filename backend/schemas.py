@@ -26,3 +26,10 @@ class TicketResponse(BaseModel):
     created_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+class TicketAssign(BaseModel):
+    agent_id: int
+
+class TicketStatusUpdate(BaseModel):
+    status: str
