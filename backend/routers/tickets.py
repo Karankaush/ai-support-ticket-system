@@ -7,6 +7,10 @@ from schemas import TicketCreate, TicketResponse
 from security import get_current_user
 from fastapi import HTTPException
 
+import json
+
+from redis_client import redis_client
+
 
 
 
@@ -42,12 +46,40 @@ def get_tickets(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    cache_key = f"tickets:{current_user.id}"
+
+    cached_tickets = redis_client.get(cache_key)
+
+    if cached_tickets:
+        return json.loads(cached_tickets)
+
     query = select(Ticket)
 
     if current_user.role == "CUSTOMER":
         query = query.where(Ticket.created_by == current_user.id)
 
-    return db.scalars(query).all()
+    tickets = db.scalars(query).all()
+
+    ticket_data = [
+        {
+            "id": ticket.id,
+            "title": ticket.title,
+            "description": ticket.description,
+            "status": ticket.status,
+            "created_by": ticket.created_by,
+            "assigned_to": ticket.assigned_to,
+            "created_at": ticket.created_at.isoformat(),
+        }
+        for ticket in tickets
+    ]
+
+    redis_client.setex(
+        cache_key,
+        60,
+        json.dumps(ticket_data),
+    )
+
+    return ticket_data
 
 
 
